@@ -27,6 +27,8 @@ function updatePreviousGiftsList(givenGifts) {
 function clearPreviousGiftsList() {
     let list = document.getElementById("previousGifts");
     list.innerHTML = ""; // Clear the list
+    document.getElementById("selectedGift").innerText = ""; // Clear the description
+    document.getElementById("giftDescription").innerText = ""; // Clear the gift description
 }
 
 
@@ -68,6 +70,7 @@ document.getElementById("giftButton").addEventListener("click", async function()
 
     if (availableGifts.length === 0) {
         document.getElementById("selectedGift").innerText = "All gifts have been given!";
+        document.getElementById("giftDescription").innerText = ""; // Clear the description
         updatePreviousGiftsList(gifts.filter(gift => gift.Given));
         return;
     }
