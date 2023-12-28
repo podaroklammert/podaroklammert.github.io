@@ -84,14 +84,14 @@ document.getElementById("giftButton").addEventListener("click", async function()
     updatePreviousGiftsList(gifts.filter(gift => gift.Given));
 });
 
-// document.addEventListener("DOMContentLoaded", function() {
-//     var urlParams = new URLSearchParams(window.location.search);
-//     if (urlParams.get('admin') === 'true') {
-//         var resetButton = document.createElement("button");
-//         resetButton.id = "resetButton";
-//         resetButton.textContent = "Reset Gifts";
-//         document.body.appendChild(resetButton);
+document.addEventListener("DOMContentLoaded", function() {
+    var urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('admin') === 'true') {
+        var resetButton = document.createElement("button");
+        resetButton.id = "resetButton";
+        resetButton.textContent = "Reset Gifts";
+        document.body.appendChild(resetButton);
 
-//         resetButton.addEventListener("click", /* your reset function */);
-//     }
-// });
+        resetButton.addEventListener("click", clearPreviousGiftsList());
+    }
+});
