@@ -14,21 +14,29 @@ async function fetchAllGifts() {
 
 function updatePreviousGiftsList(givenGifts) {
     let list = document.getElementById("previousGifts");
+    let title = document.getElementById("previousGiftsTitle");
     list.innerHTML = ""; // Clear the list
-    givenGifts.forEach(gift => {
-        let listItem = document.createElement("li");
-        listItem.innerText = gift.Name;
-        list.appendChild(listItem);
-    });
+    if (givenGifts.length > 0) {
+        title.style.display = "block"; // Show the title if there are gifts
+        givenGifts.forEach(gift => {
+            let listItem = document.createElement("li");
+            listItem.innerText = gift.Name;
+            list.appendChild(listItem);
+        });
+    } else {
+        title.style.display = "none"; // Hide the title if there are no gifts
+    }
 }
 
 
 // Clear the list of given gifts on the webpage
 function clearPreviousGiftsList() {
     let list = document.getElementById("previousGifts");
+    let title = document.getElementById("previousGiftsTitle");
     list.innerHTML = ""; // Clear the list
-    document.getElementById("selectedGift").innerText = ""; // Clear the description
-    document.getElementById("giftDescription").innerText = ""; // Clear the gift description
+    title.style.display = "none"; // Hide the title as the list is empty
+    document.getElementById("selectedGift").innerText = "";
+    document.getElementById("giftDescription").innerText = "";
 }
 
 
@@ -76,7 +84,7 @@ document.getElementById("giftButton").addEventListener("click", async function()
     }
 
     let selectedGift = availableGifts[Math.floor(Math.random() * availableGifts.length)];
-    document.getElementById("selectedGift").innerText = "Подарочек месяца: " + selectedGift.Name;
+    document.getElementById("selectedGift").innerText = "Твой подарочек месяца: " + selectedGift.Name;
     document.getElementById("giftDescription").innerText = selectedGift.Description; // Display the description
 
     // Update the gift status to Given: true
