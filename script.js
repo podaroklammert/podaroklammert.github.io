@@ -69,14 +69,14 @@ document.getElementById("giftButton").addEventListener("click", async function()
     const availableGifts = gifts.filter(gift => !gift.Given);
 
     if (availableGifts.length === 0) {
-        document.getElementById("selectedGift").innerText = "All gifts have been given!";
+        document.getElementById("selectedGift").innerText = "Все подарочки разобрали! Ждем следующего года вместе";
         document.getElementById("giftDescription").innerText = ""; // Clear the description
         updatePreviousGiftsList(gifts.filter(gift => gift.Given));
         return;
     }
 
     let selectedGift = availableGifts[Math.floor(Math.random() * availableGifts.length)];
-    document.getElementById("selectedGift").innerText = "Your gift is: " + selectedGift.Name;
+    document.getElementById("selectedGift").innerText = "Подарочек месяца: " + selectedGift.Name;
     document.getElementById("giftDescription").innerText = selectedGift.Description; // Display the description
 
     // Update the gift status to Given: true
