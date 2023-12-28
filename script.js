@@ -72,6 +72,7 @@ document.getElementById("giftButton").addEventListener("click", async function()
 
     if (availableGifts.length === 0) {
         document.getElementById("selectedGift").innerText = "All gifts have been given!";
+        updatePreviousGiftsList(gifts.filter(gift => gift.Given));
         return;
     }
 
