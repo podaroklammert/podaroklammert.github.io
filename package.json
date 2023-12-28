@@ -1,0 +1,14 @@
+{
+    "name": "podaroklammert",
+    "version": "0.0.1",
+    "description": "Gift website",
+    "main": "index.js",
+    "dependencies": {
+      "firebase-admin": "^12.0.0" // Use the latest version or the one you need
+    },
+    "scripts": {
+      // "start": "node your-main-script.js" // Replace with your start script if applicable
+    },
+    "author": "Slava Keshkov",
+    "license": "ISC"
+  }  
