@@ -17,7 +17,7 @@ function updatePreviousGiftsList(givenGifts) {
     list.innerHTML = ""; // Clear the list
     givenGifts.forEach(gift => {
         let listItem = document.createElement("li");
-        listItem.innerText = gift.name;
+        listItem.innerText = gift.Name;
         list.appendChild(listItem);
     });
 }
@@ -76,7 +76,7 @@ document.getElementById("giftButton").addEventListener("click", async function()
     }
 
     let selectedGift = availableGifts[Math.floor(Math.random() * availableGifts.length)];
-    document.getElementById("selectedGift").innerText = "Your gift is: " + selectedGift.name;
+    document.getElementById("selectedGift").innerText = "Your gift is: " + selectedGift.Name;
 
     // Update the gift status to Given: true
     const updateSuccess = await updateGiftStatus(selectedGift.id);
