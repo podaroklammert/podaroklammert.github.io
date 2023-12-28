@@ -74,6 +74,7 @@ document.getElementById("giftButton").addEventListener("click", async function()
 
     let selectedGift = availableGifts[Math.floor(Math.random() * availableGifts.length)];
     document.getElementById("selectedGift").innerText = "Your gift is: " + selectedGift.Name;
+    document.getElementById("giftDescription").innerText = selectedGift.Description; // Display the description
 
     // Update the gift status to Given: true
     const updateSuccess = await updateGiftStatus(selectedGift.id);
@@ -83,4 +84,3 @@ document.getElementById("giftButton").addEventListener("click", async function()
 
     updatePreviousGiftsList(gifts.filter(gift => gift.Given));
 });
-
