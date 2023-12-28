@@ -52,10 +52,6 @@ document.getElementById("resetButton").addEventListener("click", async function(
         if (response.ok) {
             console.log("Gifts reset successfully");
             clearPreviousGiftsList(); // Clear the list of previous gifts
-            // Optionally, refresh the available gifts list
-            const gifts = await fetchAllGifts();
-            const availableGifts = gifts.filter(gift => !gift.Given);
-            updatePreviousGiftsList(availableGifts); // Update the list with available (now all) gifts
         } else {
             console.error("Failed to reset gifts");
         }
