@@ -9,9 +9,6 @@ admin.initializeApp({
   databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}.firebaseio.com`
 });
 
-const admin = require('firebase-admin');
-
-// Initialize Firebase admin SDK with your project credentials...
 // (already present in your current function)
 
 const db = admin.firestore();
