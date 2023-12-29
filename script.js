@@ -1,3 +1,35 @@
+// Function to display the last given gift
+document.addEventListener('DOMContentLoaded', async function() {
+    await displayLastGivenGift();
+});
+
+// Function to display the last given gift on the webpage
+async function displayLastGivenGift() {
+    try {
+      const response = await fetch('/.netlify/functions/getLastGivenGift');
+      if (!response.ok) {
+        throw new Error('Network response was not ok: ' + response.statusText);
+      }
+      const lastGivenGift = await response.json();
+      
+      // Check if the last given gift data is valid and has content
+      if (lastGivenGift && lastGivenGift.Name) {
+        // Display the last given gift details
+        document.getElementById("selectedGift").innerText = "Твой подарочек месяца: " + lastGivenGift.Name;
+        document.getElementById("giftDescription").innerText = lastGivenGift.Description;
+      } else {
+        // If the gift data is not valid, do not display any current gift
+        document.getElementById("selectedGift").innerText = "";
+        document.getElementById("giftDescription").innerText = "";
+      }
+    } catch (error) {
+      // Handle any errors during the fetch operation
+      console.error("Error fetching the last given gift: ", error);
+      // Ensure nothing is displayed if there's an error
+      document.getElementById("selectedGift").innerText = "";
+      document.getElementById("giftDescription").innerText = "";
+    }
+  }
 // Fetch all gifts from the Netlify function
 async function fetchAllGifts() {
     try {
@@ -95,3 +127,4 @@ document.getElementById("giftButton").addEventListener("click", async function()
 
     updatePreviousGiftsList(gifts.filter(gift => gift.Given));
 });
+
