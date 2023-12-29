@@ -94,20 +94,12 @@ function getQueryParamByName(name) {
     return urlParams.get(name);
 }
 
-// Function to control the visibility of the reset button based on a URL parameter
+
 function controlResetButtonVisibility() {
-    // Check if the URL contains the query parameter 'admin' with a value of '1'
     const isAdmin = getQueryParamByName('admin') === '1';
-    
-    // Select the reset button element
     const resetButton = document.getElementById('resetButton');
-    
-    // If the user is not admin (or the 'admin' parameter isn't set to '1'), hide the reset button
-    if (!isAdmin) {
-        resetButton.style.display = 'none';
-    } else {
-        // Otherwise, show the reset button
-        resetButton.style.display = 'block';
+    if (isAdmin) {
+        resetButton.style.display = 'block'; // Show if admin
     }
 }
 
