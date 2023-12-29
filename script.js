@@ -1,7 +1,4 @@
-// Function to display the last given gift
-document.addEventListener('DOMContentLoaded', async function() {
-    await displayLastGivenGift();
-});
+
 
 // Function to display the last given gift on the webpage
 async function displayLastGivenGift() {
@@ -30,6 +27,7 @@ async function displayLastGivenGift() {
       document.getElementById("giftDescription").innerText = "";
     }
   }
+  
 // Fetch all gifts from the Netlify function
 async function fetchAllGifts() {
     try {
@@ -88,43 +86,77 @@ async function updateGiftStatus(giftId) {
     }
 }
 
-document.getElementById("resetButton").addEventListener("click", async function() {
-    try {
-        const response = await fetch('/.netlify/functions/resetGifts', { method: 'POST' });
-        if (response.ok) {
-            console.log("Gifts reset successfully");
-            clearPreviousGiftsList(); // Clear the list of previous gifts
-        } else {
-            console.error("Failed to reset gifts");
+
+
+// Function to get the value of a URL query parameter by name
+function getQueryParamByName(name) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(name);
+}
+
+// Function to control the visibility of the reset button based on a URL parameter
+function controlResetButtonVisibility() {
+    // Check if the URL contains the query parameter 'admin' with a value of '1'
+    const isAdmin = getQueryParamByName('admin') === '1';
+    
+    // Select the reset button element
+    const resetButton = document.getElementById('resetButton');
+    
+    // If the user is not admin (or the 'admin' parameter isn't set to '1'), hide the reset button
+    if (!isAdmin) {
+        resetButton.style.display = 'none';
+    } else {
+        // Otherwise, show the reset button
+        resetButton.style.display = 'block';
+    }
+}
+
+
+// One single 'DOMContentLoaded' event listener
+document.addEventListener('DOMContentLoaded', async function() {
+    // Display the last given gift
+    await displayLastGivenGift();
+  
+    // Control the reset button visibility based on URL query parameter
+    controlResetButtonVisibility();
+    
+    // Set up your event listeners for giftButton and resetButton
+    document.getElementById("giftButton").addEventListener("click", async function() {
+        const gifts = await fetchAllGifts();
+        const availableGifts = gifts.filter(gift => !gift.Given);
+    
+        if (availableGifts.length === 0) {
+            document.getElementById("selectedGift").innerText = "Все подарочки разобрали! Ждем следующего года вместе";
+            document.getElementById("giftDescription").innerText = ""; // Clear the description
+            updatePreviousGiftsList(gifts.filter(gift => gift.Given));
+            return;
         }
-    } catch (error) {
-        console.error("Error resetting gifts: ", error);
-    }
-});
-
-
-
-document.getElementById("giftButton").addEventListener("click", async function() {
-    const gifts = await fetchAllGifts();
-    const availableGifts = gifts.filter(gift => !gift.Given);
-
-    if (availableGifts.length === 0) {
-        document.getElementById("selectedGift").innerText = "Все подарочки разобрали! Ждем следующего года вместе";
-        document.getElementById("giftDescription").innerText = ""; // Clear the description
+    
+        let selectedGift = availableGifts[Math.floor(Math.random() * availableGifts.length)];
+        document.getElementById("selectedGift").innerText = "Твой подарочек месяца: " + selectedGift.Name;
+        document.getElementById("giftDescription").innerText = selectedGift.Description; // Display the description
+    
+        // Update the gift status to Given: true
+        const updateSuccess = await updateGiftStatus(selectedGift.id);
+        if (updateSuccess) {
+            console.log("Gift status updated successfully");
+        }
+    
         updatePreviousGiftsList(gifts.filter(gift => gift.Given));
-        return;
-    }
-
-    let selectedGift = availableGifts[Math.floor(Math.random() * availableGifts.length)];
-    document.getElementById("selectedGift").innerText = "Твой подарочек месяца: " + selectedGift.Name;
-    document.getElementById("giftDescription").innerText = selectedGift.Description; // Display the description
-
-    // Update the gift status to Given: true
-    const updateSuccess = await updateGiftStatus(selectedGift.id);
-    if (updateSuccess) {
-        console.log("Gift status updated successfully");
-    }
-
-    updatePreviousGiftsList(gifts.filter(gift => gift.Given));
+    });
+    
+    
+    document.getElementById("resetButton").addEventListener("click", async function() {
+        try {
+            const response = await fetch('/.netlify/functions/resetGifts', { method: 'POST' });
+            if (response.ok) {
+                console.log("Gifts reset successfully");
+                clearPreviousGiftsList(); // Clear the list of previous gifts
+            } else {
+                console.error("Failed to reset gifts");
+            }
+        } catch (error) {
+            console.error("Error resetting gifts: ", error);
+        }
+    });
 });
-
