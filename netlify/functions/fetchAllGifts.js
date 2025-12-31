@@ -14,8 +14,17 @@ const db = admin.firestore();
 
 exports.handler = async function(event) {
   try {
+    // Default to current year, allow override via query parameter for testing
+    const currentYear = new Date().getFullYear();
+    const queryYear = event.queryStringParameters?.year;
+    const filterYear = queryYear ? parseInt(queryYear) : currentYear;
+
     const giftsSnapshot = await db.collection('gifts').get();
-    const gifts = giftsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const allGifts = giftsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    // Filter gifts by year
+    const gifts = allGifts.filter(gift => gift.Year === filterYear);
+
     return {
       statusCode: 200,
       body: JSON.stringify(gifts)
