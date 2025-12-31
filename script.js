@@ -6,24 +6,33 @@ const RUSSIAN_MONTHS = [
     'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
 ];
 
+// Get current month (supports ?month=X override for testing)
+function getCurrentMonth() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const monthParam = urlParams.get('month');
+    if (monthParam !== null) {
+        return parseInt(monthParam); // 0-11
+    }
+    return new Date().getMonth(); // 0-11
+}
+
 // Get current month name in Russian (genitive case)
 function getCurrentMonthName() {
-    const month = new Date().getMonth(); // 0-11
+    const month = getCurrentMonth();
     return RUSSIAN_MONTHS[month];
 }
 
 // Check if user can get a new gift this month
 // Returns true if: no gifts given yet, OR last gift was given in a previous month
 async function canGetGiftThisMonth(givenGiftsCount) {
-    const currentMonth = new Date().getMonth();
-    const currentYear = new Date().getFullYear();
+    const currentMonth = getCurrentMonth();
 
     // If no gifts given yet this year, user can get first gift
     if (givenGiftsCount === 0) {
         return true;
     }
 
-    // User can get gift if current month number > gifts already given
+    // User can get gift if current month number >= gifts already given
     // e.g., in January (month 0), can get gift if 0 gifts given
     // in February (month 1), can get gift if 0 or 1 gifts given
     return currentMonth >= givenGiftsCount;
