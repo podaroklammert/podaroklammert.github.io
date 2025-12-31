@@ -183,9 +183,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Display the last given gift
     await displayLastGivenGift();
 
-    // Load and display previously given gifts
+    // Load and display previously given gifts (excluding skipped)
     const gifts = await fetchAllGifts();
-    updatePreviousGiftsList(gifts.filter(gift => gift.Given));
+    updatePreviousGiftsList(gifts.filter(gift => gift.Given && !gift.Skipped));
 
     // Control the reset button visibility based on URL query parameter
     controlResetButtonVisibility();
@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             if (availableGifts.length === 0) {
                 document.getElementById("selectedGift").innerText = "Все подарочки разобрали! Ждем следующего года вместе";
                 document.getElementById("giftDescription").innerText = ""; // Clear the description
-                updatePreviousGiftsList(gifts.filter(gift => gift.Given));
+                updatePreviousGiftsList(gifts.filter(gift => gift.Given && !gift.Skipped));
                 rejectButton.style.display = "none";
                 // Keep button disabled
                 giftButton.innerText = "Все подарки получены";
@@ -282,8 +282,8 @@ document.addEventListener('DOMContentLoaded', async function() {
                 console.log("Gift status updated successfully");
             }
 
-            // Update previous gifts list with the newly given gift
-            updatePreviousGiftsList([...gifts.filter(gift => gift.Given), selectedGift]);
+            // Update previous gifts list (only past gifts, not current or skipped)
+            updatePreviousGiftsList(gifts.filter(gift => gift.Given && !gift.Skipped));
 
             // Update button state after gift is given
             await updateButtonState();
@@ -343,8 +343,8 @@ document.addEventListener('DOMContentLoaded', async function() {
                 console.log("New gift status updated successfully");
             }
 
-            // Update previous gifts list
-            updatePreviousGiftsList(gifts.filter(gift => gift.Given));
+            // Update previous gifts list (excluding skipped)
+            updatePreviousGiftsList(gifts.filter(gift => gift.Given && !gift.Skipped));
 
         } catch (error) {
             console.error("Error rejecting gift:", error);
