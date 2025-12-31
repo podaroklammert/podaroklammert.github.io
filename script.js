@@ -1,5 +1,17 @@
 
 
+// Russian month names in genitive case
+const RUSSIAN_MONTHS = [
+    'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+    'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
+];
+
+// Get current month name in Russian (genitive case)
+function getCurrentMonthName() {
+    const month = new Date().getMonth(); // 0-11
+    return RUSSIAN_MONTHS[month];
+}
+
 // Function to display the last given gift on the webpage
 async function displayLastGivenGift() {
     try {
@@ -15,11 +27,12 @@ async function displayLastGivenGift() {
         throw new Error('Network response was not ok: ' + response.statusText);
       }
       const lastGivenGift = await response.json();
-      
+
       // Check if the last given gift data is valid and has content
       if (lastGivenGift && lastGivenGift.Name) {
-        // Display the last given gift details
-        document.getElementById("selectedGift").innerText = "Твой подарочек месяца: " + lastGivenGift.Name;
+        // Display the last given gift details with current month name
+        const monthName = getCurrentMonthName();
+        document.getElementById("selectedGift").innerText = "Твой подарочек " + monthName + ": " + lastGivenGift.Name;
         document.getElementById("giftDescription").innerText = lastGivenGift.Description;
       } else {
         // If the gift data is not valid, do not display any current gift
@@ -122,7 +135,11 @@ function controlResetButtonVisibility() {
 document.addEventListener('DOMContentLoaded', async function() {
     // Display the last given gift
     await displayLastGivenGift();
-  
+
+    // Load and display previously given gifts
+    const gifts = await fetchAllGifts();
+    updatePreviousGiftsList(gifts.filter(gift => gift.Given));
+
     // Control the reset button visibility based on URL query parameter
     controlResetButtonVisibility();
     
@@ -139,7 +156,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     
         let selectedGift = availableGifts[Math.floor(Math.random() * availableGifts.length)];
-        document.getElementById("selectedGift").innerText = "Твой подарочек месяца: " + selectedGift.Name;
+        const monthName = getCurrentMonthName();
+        document.getElementById("selectedGift").innerText = "Твой подарочек " + monthName + ": " + selectedGift.Name;
         document.getElementById("giftDescription").innerText = selectedGift.Description; // Display the description
     
         // Update the gift status to Given: true
