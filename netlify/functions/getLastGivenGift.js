@@ -21,10 +21,10 @@ exports.handler = async function(event, context) {
   }
 
   try {
-    // Determine target year: query param > env var > default 2026
-    const defaultYear = parseInt(process.env.CURRENT_YEAR || '2026');
+    // Default to current year, allow override via query parameter for testing
+    const currentYear = new Date().getFullYear();
     const queryYear = event.queryStringParameters?.year;
-    const targetYear = queryYear ? parseInt(queryYear) : defaultYear;
+    const targetYear = queryYear ? parseInt(queryYear) : currentYear;
 
     // Get the document reference for 'lastGivenGift' from the 'metadata' collection
     const metadataRef = db.collection('metadata').doc('lastGivenGift');
