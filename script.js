@@ -176,6 +176,18 @@ document.addEventListener('DOMContentLoaded', async function() {
             if (response.ok) {
                 console.log("Gifts reset successfully");
                 clearPreviousGiftsList(); // Clear the list of previous gifts
+
+                // Fetch and display available gifts as confirmation
+                const gifts = await fetchAllGifts();
+                const availableGifts = gifts.filter(gift => !gift.Given);
+
+                // Show confirmation message with count
+                document.getElementById("selectedGift").innerText =
+                    "✅ Подарки сброшены! Доступно подарков: " + availableGifts.length;
+
+                // Show list of available gifts in description
+                const giftNames = availableGifts.map(gift => "• " + gift.Name).join("\n");
+                document.getElementById("giftDescription").innerText = giftNames;
             } else {
                 console.error("Failed to reset gifts");
             }
