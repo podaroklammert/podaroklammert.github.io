@@ -3,7 +3,14 @@
 // Function to display the last given gift on the webpage
 async function displayLastGivenGift() {
     try {
-      const response = await fetch('/.netlify/functions/getLastGivenGift');
+      // Check if there's a year parameter in the URL for testing
+      const urlParams = new URLSearchParams(window.location.search);
+      const yearParam = urlParams.get('year');
+      const url = yearParam
+          ? `/.netlify/functions/getLastGivenGift?year=${yearParam}`
+          : '/.netlify/functions/getLastGivenGift';
+
+      const response = await fetch(url);
       if (!response.ok) {
         throw new Error('Network response was not ok: ' + response.statusText);
       }

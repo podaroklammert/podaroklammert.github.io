@@ -21,10 +21,15 @@ exports.handler = async function(event, context) {
   }
 
   try {
+    // Determine target year: query param > env var > default 2026
+    const defaultYear = parseInt(process.env.CURRENT_YEAR || '2026');
+    const queryYear = event.queryStringParameters?.year;
+    const targetYear = queryYear ? parseInt(queryYear) : defaultYear;
+
     // Get the document reference for 'lastGivenGift' from the 'metadata' collection
     const metadataRef = db.collection('metadata').doc('lastGivenGift');
     const metadataDoc = await metadataRef.get();
-    
+
     if (!metadataDoc.exists) {
       // If the 'lastGivenGift' document does not exist, return a meaningful message
       return {
@@ -32,13 +37,13 @@ exports.handler = async function(event, context) {
         body: JSON.stringify({ message: "Last given gift record not found." })
       };
     }
-    
+
     const lastGivenGiftMetadata = metadataDoc.data();
-    
+
     // Using the 'RefID' from metadata to get the last given gift details
     const giftRef = db.collection('gifts').doc(lastGivenGiftMetadata.RefID);
     const giftDoc = await giftRef.get();
-    
+
     if (!giftDoc.exists) {
       // If the gift with 'RefID' does not exist, return a meaningful message
       return {
@@ -46,11 +51,22 @@ exports.handler = async function(event, context) {
         body: JSON.stringify({ message: "Gift not found." })
       };
     }
-    
+
+    const giftData = giftDoc.data();
+
+    // Check if the gift belongs to the target year
+    if (giftData.Year !== targetYear) {
+      // Gift is from a different year, don't show it
+      return {
+        statusCode: 404,
+        body: JSON.stringify({ message: "No gift found for current year." })
+      };
+    }
+
     // Return the last given gift data
     return {
       statusCode: 200,
-      body: JSON.stringify(giftDoc.data())
+      body: JSON.stringify(giftData)
     };
 
   } catch (error) {
