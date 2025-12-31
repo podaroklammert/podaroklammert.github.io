@@ -12,6 +12,28 @@ function getCurrentMonthName() {
     return RUSSIAN_MONTHS[month];
 }
 
+// Check if user can get a new gift this month
+// Returns true if: no gifts given yet, OR last gift was given in a previous month
+async function canGetGiftThisMonth(givenGiftsCount) {
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+
+    // If no gifts given yet this year, user can get first gift
+    if (givenGiftsCount === 0) {
+        return true;
+    }
+
+    // User can get gift if current month number > gifts already given
+    // e.g., in January (month 0), can get gift if 0 gifts given
+    // in February (month 1), can get gift if 0 or 1 gifts given
+    return currentMonth >= givenGiftsCount;
+}
+
+// Check if admin mode is enabled
+function isAdminMode() {
+    return getQueryParamByName('admin') === '1';
+}
+
 // Function to display the last given gift on the webpage
 async function displayLastGivenGift() {
     try {
@@ -147,7 +169,53 @@ document.addEventListener('DOMContentLoaded', async function() {
     const giftButton = document.getElementById("giftButton");
     const originalButtonText = giftButton.innerText;
 
+    // Check if button should be disabled based on month (skip for admin)
+    async function updateButtonState() {
+        if (isAdminMode()) {
+            giftButton.disabled = false;
+            giftButton.innerText = originalButtonText;
+            return;
+        }
+
+        const gifts = await fetchAllGifts();
+        const givenGifts = gifts.filter(gift => gift.Given);
+        const availableGifts = gifts.filter(gift => !gift.Given);
+
+        // If all gifts are given, disable button
+        if (availableGifts.length === 0) {
+            giftButton.disabled = true;
+            giftButton.innerText = "Все подарки получены";
+            return;
+        }
+
+        // Check if user already got gift this month
+        const canGet = await canGetGiftThisMonth(givenGifts.length);
+        if (!canGet) {
+            giftButton.disabled = true;
+            giftButton.innerText = "Подожди следующего месяца";
+        } else {
+            giftButton.disabled = false;
+            giftButton.innerText = originalButtonText;
+        }
+    }
+
+    // Initial button state check
+    await updateButtonState();
+
     giftButton.addEventListener("click", async function() {
+        // Check month restriction (skip for admin)
+        if (!isAdminMode()) {
+            const allGifts = await fetchAllGifts();
+            const givenCount = allGifts.filter(gift => gift.Given).length;
+            const canGet = await canGetGiftThisMonth(givenCount);
+
+            if (!canGet) {
+                document.getElementById("selectedGift").innerText = "Подожди следующего месяца, чтобы получить подарок!";
+                document.getElementById("giftDescription").innerText = "";
+                return;
+            }
+        }
+
         // Disable button and show loading spinner
         giftButton.disabled = true;
         giftButton.innerHTML = '<span class="spinner"></span>Открываем...';
@@ -160,25 +228,34 @@ document.addEventListener('DOMContentLoaded', async function() {
                 document.getElementById("selectedGift").innerText = "Все подарочки разобрали! Ждем следующего года вместе";
                 document.getElementById("giftDescription").innerText = ""; // Clear the description
                 updatePreviousGiftsList(gifts.filter(gift => gift.Given));
+                // Keep button disabled
+                giftButton.innerText = "Все подарки получены";
                 return;
             }
 
             let selectedGift = availableGifts[Math.floor(Math.random() * availableGifts.length)];
             const monthName = getCurrentMonthName();
             document.getElementById("selectedGift").innerText = "Твой подарочек " + monthName + ": " + selectedGift.Name;
-            document.getElementById("giftDescription").innerText = selectedGift.Description; // Display the description
+            document.getElementById("giftDescription").innerText = selectedGift.Description;
 
-            // Update the gift status to Given: true
+            // Stop spinner immediately after showing gift (before database update)
+            giftButton.disabled = false;
+            giftButton.innerText = originalButtonText;
+
+            // Update the gift status to Given: true (in background)
             const updateSuccess = await updateGiftStatus(selectedGift.id);
             if (updateSuccess) {
                 console.log("Gift status updated successfully");
             }
 
-            updatePreviousGiftsList(gifts.filter(gift => gift.Given));
+            // Update previous gifts list with the newly given gift
+            updatePreviousGiftsList([...gifts.filter(gift => gift.Given), selectedGift]);
+
+            // Update button state after gift is given
+            await updateButtonState();
         } catch (error) {
             console.error("Error getting gift:", error);
-        } finally {
-            // Re-enable button and restore text
+            // Re-enable button on error
             giftButton.disabled = false;
             giftButton.innerText = originalButtonText;
         }
