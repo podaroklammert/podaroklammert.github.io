@@ -21,11 +21,12 @@ podaroklammert.github.io/
 ├── script.js               # Frontend logic for gift selection/display
 ├── package.json            # Dependencies (firebase-admin)
 ├── netlify/functions/      # Serverless backend functions
-│   ├── fetchAllGifts.js    # Get all gifts from Firebase
-│   ├── getLastGivenGift.js # Get most recently given gift
+│   ├── fetchAllGifts.js    # Get all gifts from Firebase (filtered by year)
+│   ├── getLastGivenGift.js # Get most recently given gift (filtered by year)
 │   ├── updateGift.js       # Mark gift as given
 │   └── resetGifts.js       # Reset all gifts (admin)
-├── notebook/               # Python scripts for DB initialization
+├── dev-scripts/            # Database management scripts
+├── data/                   # Gift data JSON files
 └── Product 12 Gifts/       # Product documentation
 ```
 
@@ -73,14 +74,21 @@ Document structure:
 - **Main developer skill**: Python (limited JavaScript knowledge)
 - **AI assistance**: Claude Code and Antigravity for development
 - **Deployment**: Auto-deploy via Netlify on git push
-- **Database init**: Manual initialization via Python notebook
+- **Database scripts**: `/dev-scripts/` for gift management
 
 ## Admin Access
 
 Add `?admin=1` to URL to show reset button:
 ```
-https://your-site.netlify.app/?admin=1
+https://podaroklammert.netlify.app/?admin=1
 ```
+
+For testing a specific year, combine with `year` parameter:
+```
+https://podaroklammert.netlify.app/?admin=1&year=2026
+```
+
+**Note:** The reset button resets ALL gifts across all years. The `year` parameter only affects which gifts are displayed in the confirmation message.
 
 ## Recent Changes
 
