@@ -144,6 +144,22 @@ async function updateGiftStatus(giftId) {
     }
 }
 
+async function skipGift(giftId) {
+    try {
+        const response = await fetch('/.netlify/functions/skipGift', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id: giftId })
+        });
+        return response.ok;
+    } catch (error) {
+        console.error("Error skipping gift: ", error);
+        return false;
+    }
+}
+
 
 
 // Function to get the value of a URL query parameter by name
@@ -173,10 +189,14 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // Control the reset button visibility based on URL query parameter
     controlResetButtonVisibility();
-    
+
     // Set up your event listeners for giftButton and resetButton
     const giftButton = document.getElementById("giftButton");
+    const rejectButton = document.getElementById("rejectButton");
     const originalButtonText = giftButton.innerText;
+
+    // Track current selected gift for rejection
+    let currentSelectedGift = null;
 
     // Check if button should be disabled based on month (skip for admin)
     async function updateButtonState() {
@@ -188,9 +208,9 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         const gifts = await fetchAllGifts();
         const givenGifts = gifts.filter(gift => gift.Given);
-        const availableGifts = gifts.filter(gift => !gift.Given);
+        const availableGifts = gifts.filter(gift => !gift.Given && !gift.Skipped);
 
-        // If all gifts are given, disable button
+        // If all gifts are given or skipped, disable button
         if (availableGifts.length === 0) {
             giftButton.disabled = true;
             giftButton.innerText = "Все подарки получены";
@@ -231,18 +251,20 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         try {
             const gifts = await fetchAllGifts();
-            const availableGifts = gifts.filter(gift => !gift.Given);
+            const availableGifts = gifts.filter(gift => !gift.Given && !gift.Skipped);
 
             if (availableGifts.length === 0) {
                 document.getElementById("selectedGift").innerText = "Все подарочки разобрали! Ждем следующего года вместе";
                 document.getElementById("giftDescription").innerText = ""; // Clear the description
                 updatePreviousGiftsList(gifts.filter(gift => gift.Given));
+                rejectButton.style.display = "none";
                 // Keep button disabled
                 giftButton.innerText = "Все подарки получены";
                 return;
             }
 
             let selectedGift = availableGifts[Math.floor(Math.random() * availableGifts.length)];
+            currentSelectedGift = selectedGift;
             const monthName = getCurrentMonthName();
             document.getElementById("selectedGift").innerText = "Твой подарочек " + monthName + ": " + selectedGift.Name;
             document.getElementById("giftDescription").innerText = selectedGift.Description;
@@ -250,6 +272,9 @@ document.addEventListener('DOMContentLoaded', async function() {
             // Stop spinner immediately after showing gift (before database update)
             giftButton.disabled = false;
             giftButton.innerText = originalButtonText;
+
+            // Show reject button so user can reject this gift
+            rejectButton.style.display = "block";
 
             // Update the gift status to Given: true (in background)
             const updateSuccess = await updateGiftStatus(selectedGift.id);
@@ -269,8 +294,65 @@ document.addEventListener('DOMContentLoaded', async function() {
             giftButton.innerText = originalButtonText;
         }
     });
-    
-    
+
+    // Reject button click handler
+    rejectButton.addEventListener("click", async function() {
+        if (!currentSelectedGift) {
+            return;
+        }
+
+        // Disable reject button and show loading
+        rejectButton.disabled = true;
+        rejectButton.innerHTML = '<span class="spinner"></span>Отклоняем...';
+
+        try {
+            // Skip the current gift
+            const skipSuccess = await skipGift(currentSelectedGift.id);
+            if (skipSuccess) {
+                console.log("Gift skipped successfully");
+            }
+
+            // Fetch fresh data and draw a new gift
+            const gifts = await fetchAllGifts();
+            const availableGifts = gifts.filter(gift => !gift.Given && !gift.Skipped);
+
+            if (availableGifts.length === 0) {
+                document.getElementById("selectedGift").innerText = "Все подарочки разобрали! Ждем следующего года вместе";
+                document.getElementById("giftDescription").innerText = "";
+                rejectButton.style.display = "none";
+                giftButton.disabled = true;
+                giftButton.innerText = "Все подарки получены";
+                currentSelectedGift = null;
+                return;
+            }
+
+            // Select a new random gift
+            let newGift = availableGifts[Math.floor(Math.random() * availableGifts.length)];
+            currentSelectedGift = newGift;
+            const monthName = getCurrentMonthName();
+            document.getElementById("selectedGift").innerText = "Твой подарочек " + monthName + ": " + newGift.Name;
+            document.getElementById("giftDescription").innerText = newGift.Description;
+
+            // Re-enable reject button
+            rejectButton.disabled = false;
+            rejectButton.innerText = "Не хочу этот подарок";
+
+            // Mark new gift as given
+            const updateSuccess = await updateGiftStatus(newGift.id);
+            if (updateSuccess) {
+                console.log("New gift status updated successfully");
+            }
+
+            // Update previous gifts list
+            updatePreviousGiftsList(gifts.filter(gift => gift.Given));
+
+        } catch (error) {
+            console.error("Error rejecting gift:", error);
+            rejectButton.disabled = false;
+            rejectButton.innerText = "Не хочу этот подарок";
+        }
+    });
+
     document.getElementById("resetButton").addEventListener("click", async function() {
         try {
             const response = await fetch('/.netlify/functions/resetGifts', { method: 'POST' });
