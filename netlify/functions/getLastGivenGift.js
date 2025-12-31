@@ -14,6 +14,11 @@ if (admin.apps.length === 0) {
 
 const db = admin.firestore();
 
+// Get current year in Amsterdam timezone
+function getAmsterdamYear() {
+  return parseInt(new Date().toLocaleString('en-US', { timeZone: 'Europe/Amsterdam', year: 'numeric' }));
+}
+
 exports.handler = async function(event, context) {
   // This Netlify function will only respond to HTTP GET requests
   if (event.httpMethod !== 'GET') {
@@ -21,8 +26,8 @@ exports.handler = async function(event, context) {
   }
 
   try {
-    // Default to current year, allow override via query parameter for testing
-    const currentYear = new Date().getFullYear();
+    // Default to current year (Amsterdam time), allow override via query parameter for testing
+    const currentYear = getAmsterdamYear();
     const queryYear = event.queryStringParameters?.year;
     const targetYear = queryYear ? parseInt(queryYear) : currentYear;
 

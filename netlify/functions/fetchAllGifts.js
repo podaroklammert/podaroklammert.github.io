@@ -12,10 +12,15 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
+// Get current year in Amsterdam timezone
+function getAmsterdamYear() {
+  return parseInt(new Date().toLocaleString('en-US', { timeZone: 'Europe/Amsterdam', year: 'numeric' }));
+}
+
 exports.handler = async function(event) {
   try {
-    // Default to current year, allow override via query parameter for testing
-    const currentYear = new Date().getFullYear();
+    // Default to current year (Amsterdam time), allow override via query parameter for testing
+    const currentYear = getAmsterdamYear();
     const queryYear = event.queryStringParameters?.year;
     const filterYear = queryYear ? parseInt(queryYear) : currentYear;
 
