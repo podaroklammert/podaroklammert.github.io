@@ -31,7 +31,14 @@ async function displayLastGivenGift() {
 // Fetch all gifts from the Netlify function
 async function fetchAllGifts() {
     try {
-        const response = await fetch('/.netlify/functions/fetchAllGifts'); // Make sure the function name matches
+        // Check if there's a year parameter in the URL for testing
+        const urlParams = new URLSearchParams(window.location.search);
+        const yearParam = urlParams.get('year');
+        const url = yearParam
+            ? `/.netlify/functions/fetchAllGifts?year=${yearParam}`
+            : '/.netlify/functions/fetchAllGifts';
+
+        const response = await fetch(url);
         if (!response.ok) {
             throw new Error('Network response was not ok: ' + response.statusText);
         }
