@@ -4,10 +4,9 @@
     "description": "Gift website",
     "main": "index.js",
     "dependencies": {
-      "firebase-admin": "^12.0.0" 
+        "firebase-admin": "^12.0.0"
     },
-    "scripts": {
-    },
+    "scripts": {},
     "author": "Slava Keshkov",
     "license": "ISC"
-  }  
+}
