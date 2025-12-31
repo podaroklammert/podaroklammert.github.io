@@ -44,6 +44,7 @@ function isAdminMode() {
 }
 
 // Function to display the last given gift on the webpage
+// Returns the gift object if found, null otherwise
 async function displayLastGivenGift() {
     try {
       // Check if there's a year parameter in the URL for testing
@@ -65,10 +66,12 @@ async function displayLastGivenGift() {
         const monthName = getCurrentMonthName();
         document.getElementById("selectedGift").innerText = "Твой подарочек " + monthName + ": " + lastGivenGift.Name;
         document.getElementById("giftDescription").innerText = lastGivenGift.Description;
+        return lastGivenGift;
       } else {
         // If the gift data is not valid, do not display any current gift
         document.getElementById("selectedGift").innerText = "";
         document.getElementById("giftDescription").innerText = "";
+        return null;
       }
     } catch (error) {
       // Handle any errors during the fetch operation
@@ -76,6 +79,7 @@ async function displayLastGivenGift() {
       // Ensure nothing is displayed if there's an error
       document.getElementById("selectedGift").innerText = "";
       document.getElementById("giftDescription").innerText = "";
+      return null;
     }
   }
   
@@ -180,16 +184,6 @@ function controlResetButtonVisibility() {
 
 // One single 'DOMContentLoaded' event listener
 document.addEventListener('DOMContentLoaded', async function() {
-    // Display the last given gift
-    await displayLastGivenGift();
-
-    // Load and display previously given gifts (excluding skipped)
-    const gifts = await fetchAllGifts();
-    updatePreviousGiftsList(gifts.filter(gift => gift.Given && !gift.Skipped));
-
-    // Control the reset button visibility based on URL query parameter
-    controlResetButtonVisibility();
-
     // Set up your event listeners for giftButton and resetButton
     const giftButton = document.getElementById("giftButton");
     const rejectButton = document.getElementById("rejectButton");
@@ -197,6 +191,20 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // Track current selected gift for rejection
     let currentSelectedGift = null;
+
+    // Display the last given gift and set it as current for rejection
+    const lastGift = await displayLastGivenGift();
+    if (lastGift) {
+        currentSelectedGift = lastGift;
+        rejectButton.style.display = "block";
+    }
+
+    // Load and display previously given gifts (excluding skipped)
+    const gifts = await fetchAllGifts();
+    updatePreviousGiftsList(gifts.filter(gift => gift.Given && !gift.Skipped));
+
+    // Control the reset button visibility based on URL query parameter
+    controlResetButtonVisibility();
 
     // Check if button should be disabled based on month (skip for admin)
     async function updateButtonState() {
