@@ -144,29 +144,44 @@ document.addEventListener('DOMContentLoaded', async function() {
     controlResetButtonVisibility();
     
     // Set up your event listeners for giftButton and resetButton
-    document.getElementById("giftButton").addEventListener("click", async function() {
-        const gifts = await fetchAllGifts();
-        const availableGifts = gifts.filter(gift => !gift.Given);
-    
-        if (availableGifts.length === 0) {
-            document.getElementById("selectedGift").innerText = "Все подарочки разобрали! Ждем следующего года вместе";
-            document.getElementById("giftDescription").innerText = ""; // Clear the description
+    const giftButton = document.getElementById("giftButton");
+    const originalButtonText = giftButton.innerText;
+
+    giftButton.addEventListener("click", async function() {
+        // Disable button and show loading spinner
+        giftButton.disabled = true;
+        giftButton.innerHTML = '<span class="spinner"></span>Открываем...';
+
+        try {
+            const gifts = await fetchAllGifts();
+            const availableGifts = gifts.filter(gift => !gift.Given);
+
+            if (availableGifts.length === 0) {
+                document.getElementById("selectedGift").innerText = "Все подарочки разобрали! Ждем следующего года вместе";
+                document.getElementById("giftDescription").innerText = ""; // Clear the description
+                updatePreviousGiftsList(gifts.filter(gift => gift.Given));
+                return;
+            }
+
+            let selectedGift = availableGifts[Math.floor(Math.random() * availableGifts.length)];
+            const monthName = getCurrentMonthName();
+            document.getElementById("selectedGift").innerText = "Твой подарочек " + monthName + ": " + selectedGift.Name;
+            document.getElementById("giftDescription").innerText = selectedGift.Description; // Display the description
+
+            // Update the gift status to Given: true
+            const updateSuccess = await updateGiftStatus(selectedGift.id);
+            if (updateSuccess) {
+                console.log("Gift status updated successfully");
+            }
+
             updatePreviousGiftsList(gifts.filter(gift => gift.Given));
-            return;
+        } catch (error) {
+            console.error("Error getting gift:", error);
+        } finally {
+            // Re-enable button and restore text
+            giftButton.disabled = false;
+            giftButton.innerText = originalButtonText;
         }
-    
-        let selectedGift = availableGifts[Math.floor(Math.random() * availableGifts.length)];
-        const monthName = getCurrentMonthName();
-        document.getElementById("selectedGift").innerText = "Твой подарочек " + monthName + ": " + selectedGift.Name;
-        document.getElementById("giftDescription").innerText = selectedGift.Description; // Display the description
-    
-        // Update the gift status to Given: true
-        const updateSuccess = await updateGiftStatus(selectedGift.id);
-        if (updateSuccess) {
-            console.log("Gift status updated successfully");
-        }
-    
-        updatePreviousGiftsList(gifts.filter(gift => gift.Given));
     });
     
     
