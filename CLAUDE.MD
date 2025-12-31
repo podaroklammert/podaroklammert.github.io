@@ -78,17 +78,29 @@ Document structure:
 
 ## Admin Access
 
-Add `?admin=1` to URL to show reset button:
+Add `?admin=1` to URL to show reset button and bypass month restrictions:
 ```
 https://podaroklammert.netlify.app/?admin=1
 ```
 
-For testing a specific year, combine with `year` parameter:
+### URL Parameters for Testing
+
+| Parameter | Values | Description |
+|-----------|--------|-------------|
+| `admin` | `1` | Show reset button, bypass month blocking |
+| `year` | `2024`, `2025`, etc. | Filter gifts by year |
+| `month` | `0`-`11` | Simulate month (0=Jan, 11=Dec) |
+
+**Examples:**
 ```
-https://podaroklammert.netlify.app/?admin=1&year=2026
+?admin=1&year=2025&month=0   # Test January with 2025 gifts
+?month=0                      # Simulate January (1 gift allowed)
+?admin=1&year=2026            # Admin mode with 2026 gifts
 ```
 
-**Note:** The reset button resets ALL gifts across all years. The `year` parameter only affects which gifts are displayed in the confirmation message.
+**Notes:**
+- Reset button resets ALL gifts across all years
+- Month blocking: In month N, user can have max N+1 gifts (Jan=1, Feb=2, etc.)
 
 ## Recent Changes
 
