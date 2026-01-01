@@ -20,32 +20,52 @@ exports.handler = async function(event) {
   }
 
   try {
-    // Reset the gifts' 'Given' status
-    const gifts = await db.collection('gifts').get();
     const batch = db.batch();
 
+    // 1. Reset all gifts' 'Given' status to false
+    const gifts = await db.collection('gifts').get();
     gifts.docs.forEach(doc => {
       batch.update(doc.ref, { Given: false });
     });
 
-    // Reset the metadata for the last given gift
-    // This assumes you want to erase the data
-    // You might choose to use `null` or a specific 'empty' indicator
-    const metadataRef = db.collection('metadata').doc('lastGivenGift');
-    batch.set(metadataRef, {
-      RefID: '', // Or 'null' if you prefer to clear the reference.
-      Timestamp: null // Removes the timestamp
+    // 2. Restore skipped gifts back to gifts collection
+    const skippedGifts = await db.collection('skipped_gifts').get();
+    skippedGifts.docs.forEach(doc => {
+      const data = doc.data();
+      // Remove skipped-specific fields and reset to available
+      const { Skipped, skippedAt, movedAt, originalCollection, ...cleanData } = data;
+
+      // Add back to gifts collection
+      batch.set(db.collection('gifts').doc(doc.id), {
+        ...cleanData,
+        Given: false
+      });
+
+      // Delete from skipped_gifts
+      batch.delete(doc.ref);
     });
 
-    // Commit the batch of updates
+    // 3. Reset the metadata for the last given gift
+    const metadataRef = db.collection('metadata').doc('lastGivenGift');
+    batch.set(metadataRef, {
+      RefID: '',
+      Timestamp: null
+    });
+
+    // Commit all changes
     await batch.commit();
+
+    const restoredCount = skippedGifts.docs.length;
+    const message = restoredCount > 0
+      ? `Gifts reset successfully. Restored ${restoredCount} skipped gift(s).`
+      : 'Gifts reset successfully.';
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ message: "Gifts and last given gift reset successfully" })
+      body: JSON.stringify({ message })
     };
   } catch (error) {
-    console.error(error); // Log the error to the server console
+    console.error(error);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: error.message })
