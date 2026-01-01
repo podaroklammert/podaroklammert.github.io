@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Коробочка с Подарками</title>
+    <title>Подарки для Евгении</title>
     <link href="https://fonts.googleapis.com/css?family=Lobster|Roboto&display=swap" rel="stylesheet">
     <style>
         body {
@@ -11,48 +11,118 @@
             padding: 20px;
             max-width: 800px;
             margin: auto;
-            background: #fff; /* Change color or add a background image */
-            color: #444; /* Text color */
+            background: #fff;
+            color: #444;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         h1 {
             font-family: 'Lobster', cursive;
             text-align: center;
-            color: #e53e3e; /* Title color */
-            font-size: 3rem; /* Larger title size */
+            color: #e53e3e;
+            font-size: 2.5rem;
             margin-bottom: 0.5em;
         }
-        h3 {
+
+        /* Main content area - centers the gift card */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        /* Gift card - the hero element */
+        .gift-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
             text-align: center;
-            color: #e53e3e; /* Subheading color */
         }
-        p, li {
+
+        #selectedGift {
+            font-weight: bold;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #2b6cb0;
+        }
+        #selectedGift:empty {
+            display: none;
+        }
+
+        #giftDescription {
+            margin-bottom: 20px;
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 8px;
+            line-height: 1.6;
+            color: #4b5563;
+        }
+        #giftDescription:empty {
+            display: none;
+        }
+
+        #instructionText {
+            color: #6B7280;
+            margin-bottom: 20px;
             font-size: 1rem;
-            line-height: 1.6; /* Improved readability */
         }
+
         button {
             display: block;
             width: 100%;
             padding: 15px;
-            margin-bottom: 20px;
-            background: #48bb78; /* Button color */
-            color: #fff; /* Button text color */
+            margin-bottom: 10px;
+            background: #48bb78;
+            color: #fff;
             border: none;
-            border-radius: 5px; /* Rounded corners */
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow */
-            font-size: 1.1rem; /* Larger button text */
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+            font-size: 1.1rem;
             cursor: pointer;
-            transition: background-color 0.3s; /* Transition for button hover */
+            transition: background-color 0.3s, transform 0.1s;
         }
         button:hover {
-            background: #38a169; /* Slightly darker button on hover */
+            background: #38a169;
         }
         button:active {
-            background: #2f855a; /* Even darker button on click */
+            background: #2f855a;
+            transform: scale(0.98);
         }
         button:disabled {
             background: #a0aec0;
             cursor: not-allowed;
+            transform: none;
         }
+
+        #rejectButton {
+            background: transparent;
+            color: #9CA3AF;
+            border: 1px solid #e5e7eb;
+            font-size: 0.85rem;
+            padding: 10px 16px;
+            box-shadow: none;
+        }
+        #rejectButton:hover {
+            background: #f9fafb;
+            color: #6B7280;
+        }
+
+        #resetButton {
+            background: #e53e3e;
+            margin-top: 20px;
+        }
+        #resetButton:hover {
+            background: #c53030;
+        }
+
         .spinner {
             display: inline-block;
             width: 16px;
@@ -67,44 +137,65 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-        #selectedGift {
-            font-weight: bold;
-            margin-top: 20px;
-            font-size: 1.5rem; /* Same as your adjustment */
-            margin-bottom: 20px;
-            color: #2b6cb0; /* Gift name color */
+
+        /* Navigation link to overview */
+        .nav-link {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
         }
-        #giftDescription {
-            margin-bottom: 20px;
-            background: #edf2f7; /* Description box background */
-            padding: 15px;
-            border-radius: 5px; /* Rounded corners */
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        .nav-link a {
+            color: #6B7280;
+            text-decoration: none;
+            font-size: 0.9rem;
         }
-        ul {
-            padding-left: 20px;
+        .nav-link a:hover {
+            color: #374151;
+            text-decoration: underline;
         }
+
+        /* Hidden elements for previous gifts (keeping for JS compatibility) */
+        #previousGiftsTitle, #previousGifts {
+            display: none !important;
+        }
+
         @media (max-width: 600px) {
             h1 {
-                font-size: 2rem; /* Smaller font size on mobile for the main title */
+                font-size: 2rem;
             }
-            p, li {
-                font-size: 0.9rem; /* Smaller size on mobile */
+            .gift-card {
+                padding: 20px;
+            }
+            #selectedGift {
+                font-size: 1.2rem;
             }
         }
     </style>
 </head>
 <body>
-    <h1>Коробочка с Подарками</h1>
-    <p id="selectedGift"></p>
-    <p id="giftDescription"></p>
-    <p id="instructionText">Готова открыть коробочку? Жми на кнопку, чтобы получить подарок.</p>
-    <button id="giftButton">Получить Подарок</button>
-    <button id="rejectButton" style="background: transparent; color: #a0aec0; border: 1px solid #e2e8f0; font-size: 0.85rem; padding: 8px 16px; display: none; margin-top: 10px;">Не хочу этот подарок</button>
-    <button id="resetButton" style="background: #e53e3e; display: none;">Сбросить Подарки</button>
+    <h1>Подарки для Евгении</h1>
+
+    <div class="main-content">
+        <div class="gift-card">
+            <p id="selectedGift"></p>
+            <p id="giftDescription"></p>
+            <p id="instructionText">Готова открыть коробочку? Жми на кнопку, чтобы получить подарок.</p>
+            <button id="giftButton">Получить Подарок</button>
+            <button id="rejectButton" style="display: none;">Не хочу этот подарок</button>
+        </div>
+
+        <div class="nav-link">
+            <a href="overview.html">Посмотреть все подарки →</a>
+        </div>
+    </div>
+
+    <button id="resetButton" style="display: none;">Сбросить Подарки</button>
+
+    <!-- Hidden elements for backward compatibility with script.js -->
     <h3 id="previousGiftsTitle" style="display: none;">Предыдущие Подарки:</h3>
     <ul id="previousGifts"></ul>
-    
+
     <script src="script.js"></script>
 </body>
 </html>

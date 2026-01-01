@@ -66,11 +66,17 @@ async function displayLastGivenGift() {
         const monthName = getCurrentMonthName();
         document.getElementById("selectedGift").innerText = "Твой подарочек " + monthName + ": " + lastGivenGift.Name;
         document.getElementById("giftDescription").innerText = lastGivenGift.Description;
+        // Hide instruction text when gift is displayed
+        const instructionText = document.getElementById("instructionText");
+        if (instructionText) instructionText.style.display = "none";
         return lastGivenGift;
       } else {
         // If the gift data is not valid, do not display any current gift
         document.getElementById("selectedGift").innerText = "";
         document.getElementById("giftDescription").innerText = "";
+        // Show instruction text when no gift
+        const instructionText = document.getElementById("instructionText");
+        if (instructionText) instructionText.style.display = "block";
         return null;
       }
     } catch (error) {
@@ -276,6 +282,9 @@ document.addEventListener('DOMContentLoaded', async function() {
             const monthName = getCurrentMonthName();
             document.getElementById("selectedGift").innerText = "Твой подарочек " + monthName + ": " + selectedGift.Name;
             document.getElementById("giftDescription").innerText = selectedGift.Description;
+            // Hide instruction text when gift is displayed
+            const instructionText = document.getElementById("instructionText");
+            if (instructionText) instructionText.style.display = "none";
 
             // Stop spinner immediately after showing gift (before database update)
             giftButton.disabled = false;

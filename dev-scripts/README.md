@@ -1,27 +1,35 @@
 # Development Scripts
 
-This folder contains one-off testing and development scripts that are not part of the main application.
+Database management and testing scripts for local development.
 
 ## Available Scripts
 
-### test-firebase-connection.js
-Tests Firebase database connection with read/write permissions.
+| Script | Purpose |
+|--------|---------|
+| `test-firebase-connection.js` | Test Firebase connection |
+| `get-all-gifts-detailed.js` | List all gifts with details |
+| `check-gift-timestamps.js` | Check gift update timestamps |
+| `add-year-field.js` | Add Year field to existing gifts |
+| `verify-year-field.js` | Verify Year field migration |
+| `import-2026-gifts.js` | Import gifts from JSON |
+| `test-fetch-with-year.js` | Test year filtering |
 
-**Usage:**
+## Usage
+
 ```bash
-# Install dependencies temporarily (if needed)
-npm install --no-save dotenv firebase-admin
-
-# Run the test
-node dev-scripts/test-firebase-connection.js
+# Ensure .env file exists with Firebase credentials
+node dev-scripts/<script-name>.js
 ```
 
-**Requirements:**
-- `.env` file in project root with Firebase credentials
-- `firebase-admin` package
+## Requirements
+
+- `.env` file in project root with:
+  - `FIREBASE_PROJECT_ID`
+  - `FIREBASE_CLIENT_EMAIL`
+  - `FIREBASE_PRIVATE_KEY`
+- `firebase-admin` package (installed via npm)
 
 ## Notes
 
-- Scripts in this folder are gitignored (except this README)
-- These are for local development/testing only
-- Production code should use Netlify functions in `/netlify/functions/`
+- Scripts modify production database - use with caution
+- Production code uses Netlify functions in `/netlify/functions/`
