@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>История подарков</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Design A: Soft Minimal - Overview */
+        :root {
+            --primary: #F8B4B4;
+            --text: #374151;
+            --text-light: #6B7280;
+            --bg: #FEFEFE;
+            --card-bg: #FFFFFF;
+            --border: #F3F4F6;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            padding: 40px 20px;
+            max-width: 800px;
+            margin: auto;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        h1 {
+            font-family: 'Cormorant Garamond', serif;
+            text-align: center;
+            color: var(--text);
+            font-size: 2rem;
+            font-weight: 500;
+            margin-bottom: 30px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 30px;
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .back-link:hover {
+            background: #F3F4F6;
+            color: var(--text);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .calendar-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+            h1 {
+                font-size: 1.6rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .calendar-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .month-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px 12px;
+            text-align: center;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+        .month-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+        }
+
+        .month-card.opened {
+            background: linear-gradient(135deg, #FDF2F2 0%, #FEFEFE 100%);
+            border-color: var(--primary);
+        }
+        .month-card.current {
+            background: #FFFBEB;
+            border: 2px solid #FCD34D;
+        }
+        .month-card.upcoming {
+            opacity: 0.6;
+        }
+
+        .month-name {
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+        }
+        .gift-icon {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        .gift-name {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            line-height: 1.4;
+        }
+        .gift-status {
+            font-size: 0.7rem;
+            color: #9CA3AF;
+            margin-top: 6px;
+        }
+    </style>
+</head>
+<body>
+    <a href="design-a.html" class="back-link">← Назад</a>
+    <h1>История подарков</h1>
+
+    <div class="calendar-grid" id="calendarGrid"></div>
+
+    <script>
+        const RUSSIAN_MONTHS = [
+            'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+            'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+        ];
+
+        function getCurrentMonth() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const monthParam = urlParams.get('month');
+            if (monthParam !== null) return parseInt(monthParam);
+            return new Date().getMonth();
+        }
+
+        async function fetchAllGifts() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const yearParam = urlParams.get('year');
+                const url = yearParam
+                    ? `/.netlify/functions/fetchAllGifts?year=${yearParam}`
+                    : '/.netlify/functions/fetchAllGifts';
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Network error');
+                return await response.json();
+            } catch (error) {
+                console.error("Error fetching gifts:", error);
+                return [];
+            }
+        }
+
+        async function renderCalendar() {
+            const gifts = await fetchAllGifts();
+            const currentMonth = getCurrentMonth();
+            const grid = document.getElementById('calendarGrid');
+            const givenGifts = gifts.filter(g => g.Given);
+
+            for (let month = 0; month < 12; month++) {
+                const card = document.createElement('div');
+                card.className = 'month-card';
+
+                let icon = '🎁';
+                let giftName = '';
+                let status = '';
+
+                if (month < givenGifts.length) {
+                    card.classList.add('opened');
+                    icon = '🎀';
+                    giftName = givenGifts[month]?.Name || '';
+                    status = 'Получен';
+                } else if (month === currentMonth) {
+                    card.classList.add('current');
+                    icon = '✨';
+                    status = 'Сейчас';
+                } else if (month > currentMonth) {
+                    card.classList.add('upcoming');
+                    status = 'Скоро';
+                }
+
+                card.innerHTML = `
+                    <div class="month-name">${RUSSIAN_MONTHS[month]}</div>
+                    <div class="gift-icon">${icon}</div>
+                    <div class="gift-name">${giftName}</div>
+                    <div class="gift-status">${status}</div>
+                `;
+                grid.appendChild(card);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', renderCalendar);
+    </script>
+</body>
+</html>
