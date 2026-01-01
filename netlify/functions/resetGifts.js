@@ -22,10 +22,13 @@ exports.handler = async function(event) {
   try {
     const batch = db.batch();
 
-    // 1. Reset all gifts' 'Given' status to false
+    // 1. Reset all gifts' 'Given' status to false and clear Timestamp
     const gifts = await db.collection('gifts').get();
     gifts.docs.forEach(doc => {
-      batch.update(doc.ref, { Given: false });
+      batch.update(doc.ref, {
+        Given: false,
+        Timestamp: admin.firestore.FieldValue.delete()
+      });
     });
 
     // 2. Restore skipped gifts back to gifts collection
@@ -33,7 +36,7 @@ exports.handler = async function(event) {
     skippedGifts.docs.forEach(doc => {
       const data = doc.data();
       // Remove skipped-specific fields and reset to available
-      const { Skipped, skippedAt, movedAt, originalCollection, ...cleanData } = data;
+      const { skippedAt, Timestamp, ...cleanData } = data;
 
       // Add back to gifts collection
       batch.set(db.collection('gifts').doc(doc.id), {
@@ -43,13 +46,6 @@ exports.handler = async function(event) {
 
       // Delete from skipped_gifts
       batch.delete(doc.ref);
-    });
-
-    // 3. Reset the metadata for the last given gift
-    const metadataRef = db.collection('metadata').doc('lastGivenGift');
-    batch.set(metadataRef, {
-      RefID: '',
-      Timestamp: null
     });
 
     // Commit all changes

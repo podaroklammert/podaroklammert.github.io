@@ -20,58 +20,40 @@ function getAmsterdamYear() {
 }
 
 exports.handler = async function(event, context) {
-  // This Netlify function will only respond to HTTP GET requests
   if (event.httpMethod !== 'GET') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
   try {
-    // Default to current year (Amsterdam time), allow override via query parameter for testing
+    // Default to current year (Amsterdam time), allow override via query parameter
     const currentYear = getAmsterdamYear();
     const queryYear = event.queryStringParameters?.year;
     const targetYear = queryYear ? parseInt(queryYear) : currentYear;
 
-    // Get the document reference for 'lastGivenGift' from the 'metadata' collection
-    const metadataRef = db.collection('metadata').doc('lastGivenGift');
-    const metadataDoc = await metadataRef.get();
+    // Query gifts: Given=true, Year=targetYear, ordered by Timestamp desc, limit 1
+    const snapshot = await db.collection('gifts')
+      .where('Year', '==', targetYear)
+      .where('Given', '==', true)
+      .orderBy('Timestamp', 'desc')
+      .limit(1)
+      .get();
 
-    if (!metadataDoc.exists) {
-      // If the 'lastGivenGift' document does not exist, return a meaningful message
+    if (snapshot.empty) {
       return {
         statusCode: 404,
-        body: JSON.stringify({ message: "Last given gift record not found." })
+        body: JSON.stringify({ message: "No gift found for this year." })
       };
     }
 
-    const lastGivenGiftMetadata = metadataDoc.data();
-
-    // Using the 'RefID' from metadata to get the last given gift details
-    const giftRef = db.collection('gifts').doc(lastGivenGiftMetadata.RefID);
-    const giftDoc = await giftRef.get();
-
-    if (!giftDoc.exists) {
-      // If the gift with 'RefID' does not exist, return a meaningful message
-      return {
-        statusCode: 404,
-        body: JSON.stringify({ message: "Gift not found." })
-      };
-    }
-
+    const giftDoc = snapshot.docs[0];
     const giftData = giftDoc.data();
 
-    // Check if the gift belongs to the target year
-    if (giftData.Year !== targetYear) {
-      // Gift is from a different year, don't show it
-      return {
-        statusCode: 404,
-        body: JSON.stringify({ message: "No gift found for current year." })
-      };
-    }
-
-    // Return the last given gift data
     return {
       statusCode: 200,
-      body: JSON.stringify(giftData)
+      body: JSON.stringify({
+        id: giftDoc.id,
+        ...giftData
+      })
     };
 
   } catch (error) {
