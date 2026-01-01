@@ -318,6 +318,12 @@ document.addEventListener('DOMContentLoaded', async function() {
             return;
         }
 
+        // Ask for confirmation before skipping
+        const confirmed = confirm("Точно пропускаем подарок? Он больше не появится в этом году.");
+        if (!confirmed) {
+            return;
+        }
+
         // Disable reject button and show loading
         rejectButton.disabled = true;
         rejectButton.innerHTML = '<span class="spinner"></span>Отклоняем...';
