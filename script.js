@@ -205,9 +205,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         rejectButton.style.display = "block";
     }
 
-    // Load and display previously given gifts (excluding skipped)
+    // Load and display previously given gifts
     const gifts = await fetchAllGifts();
-    updatePreviousGiftsList(gifts.filter(gift => gift.Given && !gift.Skipped));
+    updatePreviousGiftsList(gifts.filter(gift => gift.Given));
 
     // Control the reset button visibility based on URL query parameter
     controlResetButtonVisibility();
@@ -222,9 +222,9 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         const gifts = await fetchAllGifts();
         const givenGifts = gifts.filter(gift => gift.Given);
-        const availableGifts = gifts.filter(gift => !gift.Given && !gift.Skipped);
+        const availableGifts = gifts.filter(gift => !gift.Given);
 
-        // If all gifts are given or skipped, disable button
+        // If all gifts are given, disable button
         if (availableGifts.length === 0) {
             giftButton.disabled = true;
             giftButton.innerText = "Все подарки получены";
@@ -235,7 +235,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         const canGet = await canGetGiftThisMonth(givenGifts.length);
         if (!canGet) {
             giftButton.disabled = true;
-            giftButton.innerText = "Подожди следующего месяца";
+            giftButton.innerText = "Ждём следующего месяца! ✨";
         } else {
             giftButton.disabled = false;
             giftButton.innerText = originalButtonText;
@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             const canGet = await canGetGiftThisMonth(givenCount);
 
             if (!canGet) {
-                document.getElementById("selectedGift").innerText = "Подожди следующего месяца, чтобы получить подарок!";
+                document.getElementById("selectedGift").innerText = "Ждём следующего месяца! ✨";
                 document.getElementById("giftDescription").innerText = "";
                 return;
             }
@@ -265,12 +265,12 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         try {
             const gifts = await fetchAllGifts();
-            const availableGifts = gifts.filter(gift => !gift.Given && !gift.Skipped);
+            const availableGifts = gifts.filter(gift => !gift.Given);
 
             if (availableGifts.length === 0) {
                 document.getElementById("selectedGift").innerText = "Все подарочки разобрали! Ждем следующего года вместе";
                 document.getElementById("giftDescription").innerText = ""; // Clear the description
-                updatePreviousGiftsList(gifts.filter(gift => gift.Given && !gift.Skipped));
+                updatePreviousGiftsList(gifts.filter(gift => gift.Given));
                 rejectButton.style.display = "none";
                 // Keep button disabled
                 giftButton.innerText = "Все подарки получены";
@@ -299,8 +299,8 @@ document.addEventListener('DOMContentLoaded', async function() {
                 console.log("Gift status updated successfully");
             }
 
-            // Update previous gifts list (only past gifts, not current or skipped)
-            updatePreviousGiftsList(gifts.filter(gift => gift.Given && !gift.Skipped));
+            // Update previous gifts list
+            updatePreviousGiftsList(gifts.filter(gift => gift.Given));
 
             // Update button state after gift is given
             await updateButtonState();
@@ -331,7 +331,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
             // Fetch fresh data and draw a new gift
             const gifts = await fetchAllGifts();
-            const availableGifts = gifts.filter(gift => !gift.Given && !gift.Skipped);
+            const availableGifts = gifts.filter(gift => !gift.Given);
 
             if (availableGifts.length === 0) {
                 document.getElementById("selectedGift").innerText = "Все подарочки разобрали! Ждем следующего года вместе";
@@ -360,8 +360,8 @@ document.addEventListener('DOMContentLoaded', async function() {
                 console.log("New gift status updated successfully");
             }
 
-            // Update previous gifts list (excluding skipped)
-            updatePreviousGiftsList(gifts.filter(gift => gift.Given && !gift.Skipped));
+            // Update previous gifts list
+            updatePreviousGiftsList(gifts.filter(gift => gift.Given));
 
         } catch (error) {
             console.error("Error rejecting gift:", error);

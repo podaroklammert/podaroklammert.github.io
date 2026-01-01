@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Все Подарки</title>
+    <title>История подарков</title>
     <link href="https://fonts.googleapis.com/css?family=Lobster|Roboto&display=swap" rel="stylesheet">
     <style>
         body {
@@ -65,10 +65,6 @@
             background: #f0fdf4;
             border: 1px solid #bbf7d0;
         }
-        .month-card.skipped {
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-        }
         .month-card.upcoming {
             background: #f9fafb;
             border: 1px solid #e5e7eb;
@@ -101,7 +97,7 @@
 </head>
 <body>
     <a href="index.html" class="back-link">← Назад к подарку</a>
-    <h1>Все Подарки 2026</h1>
+    <h1>История подарков</h1>
 
     <div class="calendar-grid" id="calendarGrid">
         <!-- Grid will be populated by JavaScript -->
@@ -147,9 +143,8 @@
             const currentMonth = getCurrentMonth();
             const grid = document.getElementById('calendarGrid');
 
-            // Sort gifts by when they were given (we'll use index for now)
-            const givenGifts = gifts.filter(g => g.Given && !g.Skipped);
-            const skippedGifts = gifts.filter(g => g.Skipped);
+            // Get given gifts (skipped gifts are in separate collection now)
+            const givenGifts = gifts.filter(g => g.Given);
 
             for (let month = 0; month < 12; month++) {
                 const card = document.createElement('div');

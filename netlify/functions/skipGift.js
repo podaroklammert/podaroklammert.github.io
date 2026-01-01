@@ -29,12 +29,30 @@ exports.handler = async function(event) {
       };
     }
 
-    // Update the gift's Skipped status to true
-    await db.collection('gifts').doc(id).update({ Skipped: true });
+    // Get the gift data
+    const giftDoc = await db.collection('gifts').doc(id).get();
+    if (!giftDoc.exists) {
+      return {
+        statusCode: 404,
+        body: JSON.stringify({ error: 'Gift not found' })
+      };
+    }
+
+    const giftData = giftDoc.data();
+
+    // Move to skipped_gifts collection
+    await db.collection('skipped_gifts').doc(id).set({
+      ...giftData,
+      Skipped: true,
+      skippedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    // Delete from gifts collection
+    await db.collection('gifts').doc(id).delete();
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ message: 'Gift skipped successfully' })
+      body: JSON.stringify({ message: 'Gift skipped and moved to archive' })
     };
   } catch (error) {
     console.error('Error skipping gift:', error);
