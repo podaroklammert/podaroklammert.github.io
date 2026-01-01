@@ -40,10 +40,9 @@ exports.handler = async function(event) {
 
     const giftData = giftDoc.data();
 
-    // Move to skipped_gifts collection
+    // Move to skipped_gifts collection (collection = status, no flag needed)
     await db.collection('skipped_gifts').doc(id).set({
       ...giftData,
-      Skipped: true,
       skippedAt: admin.firestore.FieldValue.serverTimestamp()
     });
 
