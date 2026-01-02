@@ -64,7 +64,12 @@ async function displayLastGivenGift() {
       if (lastGivenGift && lastGivenGift.Name) {
         // Display the last given gift details with current month name
         const monthName = getCurrentMonthName();
-        document.getElementById("selectedGift").innerText = "Твой подарочек " + monthName + ": " + lastGivenGift.Name;
+        // Set label and gift name separately for better visual hierarchy
+        const giftLabel = document.getElementById("giftLabel");
+        if (giftLabel) {
+            giftLabel.innerText = "Твой подарочек " + monthName;
+        }
+        document.getElementById("selectedGift").innerText = lastGivenGift.Name;
         document.getElementById("giftDescription").innerText = lastGivenGift.Description;
         // Hide instruction text when gift is displayed
         const instructionText = document.getElementById("instructionText");
@@ -72,6 +77,8 @@ async function displayLastGivenGift() {
         return lastGivenGift;
       } else {
         // If the gift data is not valid, do not display any current gift
+        const giftLabelEmpty = document.getElementById("giftLabel");
+        if (giftLabelEmpty) giftLabelEmpty.innerText = "";
         document.getElementById("selectedGift").innerText = "";
         document.getElementById("giftDescription").innerText = "";
         // Show instruction text when no gift
@@ -83,6 +90,8 @@ async function displayLastGivenGift() {
       // Handle any errors during the fetch operation
       console.error("Error fetching the last given gift: ", error);
       // Ensure nothing is displayed if there's an error
+      const giftLabelErr = document.getElementById("giftLabel");
+      if (giftLabelErr) giftLabelErr.innerText = "";
       document.getElementById("selectedGift").innerText = "";
       document.getElementById("giftDescription").innerText = "";
       return null;
@@ -280,7 +289,12 @@ document.addEventListener('DOMContentLoaded', async function() {
             let selectedGift = availableGifts[Math.floor(Math.random() * availableGifts.length)];
             currentSelectedGift = selectedGift;
             const monthName = getCurrentMonthName();
-            document.getElementById("selectedGift").innerText = "Твой подарочек " + monthName + ": " + selectedGift.Name;
+            // Set label and gift name separately for better visual hierarchy
+            const giftLabel = document.getElementById("giftLabel");
+            if (giftLabel) {
+                giftLabel.innerText = "Твой подарочек " + monthName;
+            }
+            document.getElementById("selectedGift").innerText = selectedGift.Name;
             document.getElementById("giftDescription").innerText = selectedGift.Description;
             // Hide instruction text when gift is displayed
             const instructionText = document.getElementById("instructionText");
@@ -353,7 +367,12 @@ document.addEventListener('DOMContentLoaded', async function() {
             let newGift = availableGifts[Math.floor(Math.random() * availableGifts.length)];
             currentSelectedGift = newGift;
             const monthName = getCurrentMonthName();
-            document.getElementById("selectedGift").innerText = "Твой подарочек " + monthName + ": " + newGift.Name;
+            // Set label and gift name separately for better visual hierarchy
+            const giftLabelNew = document.getElementById("giftLabel");
+            if (giftLabelNew) {
+                giftLabelNew.innerText = "Твой подарочек " + monthName;
+            }
+            document.getElementById("selectedGift").innerText = newGift.Name;
             document.getElementById("giftDescription").innerText = newGift.Description;
 
             // Re-enable reject button
