@@ -28,7 +28,7 @@ A soft, playful design inspired by lifestyle blogs - approachable yet stylish.
 | Element | Size | Weight | Color |
 |---------|------|--------|-------|
 | Page title (h1) | 1.8rem | 700 | `--text` |
-| Subtitle "для Евгении" | 1.15rem | 600 | `--primary-dark` |
+| Subtitle "для Евгении" | 1.35rem | 700 | `--primary-dark` |
 | Gift label | 1rem | 600 | `--text-light` |
 | Gift name | 1.6rem | 800 | `--gift-title` |
 | Description | 0.92rem | 400 | `--text-light` |
