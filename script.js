@@ -6,7 +6,7 @@ const RUSSIAN_MONTHS = [
     'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
 ];
 
-// Russian month names in accusative case (for "Подарок на Январь")
+// Russian month names in accusative case (for "Подарочек на Январь")
 const RUSSIAN_MONTHS_ACCUSATIVE = [
     'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
     'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
@@ -73,7 +73,7 @@ async function displayLastGivenGift() {
         // Set label and gift name separately for better visual hierarchy
         const giftLabel = document.getElementById("giftLabel");
         if (giftLabel) {
-            giftLabel.innerText = "Подарок на " + RUSSIAN_MONTHS_ACCUSATIVE[getCurrentMonth()];
+            giftLabel.innerText = "Подарочек на" + RUSSIAN_MONTHS_ACCUSATIVE[getCurrentMonth()];
         }
         document.getElementById("selectedGift").innerText = lastGivenGift.Name;
         document.getElementById("giftDescription").innerText = lastGivenGift.Description;
@@ -298,7 +298,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             // Set label and gift name separately for better visual hierarchy
             const giftLabel = document.getElementById("giftLabel");
             if (giftLabel) {
-                giftLabel.innerText = "Подарок на " + RUSSIAN_MONTHS_ACCUSATIVE[getCurrentMonth()];
+                giftLabel.innerText = "Подарочек на" + RUSSIAN_MONTHS_ACCUSATIVE[getCurrentMonth()];
             }
             document.getElementById("selectedGift").innerText = selectedGift.Name;
             document.getElementById("giftDescription").innerText = selectedGift.Description;
@@ -376,7 +376,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             // Set label and gift name separately for better visual hierarchy
             const giftLabelNew = document.getElementById("giftLabel");
             if (giftLabelNew) {
-                giftLabelNew.innerText = "Твой подарочек " + monthName;
+                giftLabelNew.innerText = "Подарочек на" + RUSSIAN_MONTHS_ACCUSATIVE[getCurrentMonth()];
             }
             document.getElementById("selectedGift").innerText = newGift.Name;
             document.getElementById("giftDescription").innerText = newGift.Description;
