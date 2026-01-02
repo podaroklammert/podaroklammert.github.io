@@ -1,9 +1,15 @@
 
 
-// Russian month names in genitive case
+// Russian month names in genitive case (for "подарочек января")
 const RUSSIAN_MONTHS = [
     'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
     'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
+];
+
+// Russian month names in accusative case (for "Подарок на Январь")
+const RUSSIAN_MONTHS_ACCUSATIVE = [
+    'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+    'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
 ];
 
 // Get current month (supports ?month=X override for testing)
@@ -67,7 +73,7 @@ async function displayLastGivenGift() {
         // Set label and gift name separately for better visual hierarchy
         const giftLabel = document.getElementById("giftLabel");
         if (giftLabel) {
-            giftLabel.innerText = "Твой подарочек " + monthName;
+            giftLabel.innerText = "Подарок на " + RUSSIAN_MONTHS_ACCUSATIVE[getCurrentMonth()];
         }
         document.getElementById("selectedGift").innerText = lastGivenGift.Name;
         document.getElementById("giftDescription").innerText = lastGivenGift.Description;
@@ -292,7 +298,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             // Set label and gift name separately for better visual hierarchy
             const giftLabel = document.getElementById("giftLabel");
             if (giftLabel) {
-                giftLabel.innerText = "Твой подарочек " + monthName;
+                giftLabel.innerText = "Подарок на " + RUSSIAN_MONTHS_ACCUSATIVE[getCurrentMonth()];
             }
             document.getElementById("selectedGift").innerText = selectedGift.Name;
             document.getElementById("giftDescription").innerText = selectedGift.Description;
