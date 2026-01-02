@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Коробочка с подарками для Евгении</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Design B: Warm & Cozy - Card Variant 1: Elegant Script */
+        /* Uses Playfair Display for gift title, refined card styling */
+        :root {
+            --primary: #D4A5A5;
+            --primary-dark: #C49494;
+            --primary-light: #E8D4D4;
+            --accent: #A7C4A0;
+            --text: #5C4A4A;
+            --text-light: #8B7575;
+            --bg: #FDF6E3;
+            --card-bg: #FFFEF8;
+            --border: #EDE4D4;
+            --gift-title: #6B4F4F;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', -apple-system, sans-serif;
+            padding: 40px 20px;
+            max-width: 550px;
+            margin: auto;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .header-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0;
+            color: var(--text);
+        }
+
+        .subtitle {
+            color: var(--text-light);
+            font-size: 1rem;
+            margin-top: 5px;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Card Variant 1: Elegant with serif title */
+        .gift-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 32px 28px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 8px 32px rgba(92, 74, 74, 0.1);
+            border: 1px solid var(--border);
+            text-align: center;
+            position: relative;
+        }
+
+        /* Decorative ribbon at top */
+        .gift-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-light), var(--primary), var(--primary-light));
+            border-radius: 0 0 4px 4px;
+        }
+
+        .gift-emoji {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+
+        #selectedGift {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-weight: 600;
+            font-size: 1.35rem;
+            margin-bottom: 14px;
+            color: var(--gift-title);
+            line-height: 1.4;
+            letter-spacing: 0.02em;
+        }
+        #selectedGift:empty {
+            display: none;
+        }
+
+        #giftDescription {
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #FFF9E8 0%, #FDF6E3 100%);
+            padding: 16px 18px;
+            border-radius: 12px;
+            line-height: 1.7;
+            color: var(--text-light);
+            font-size: 0.95rem;
+            border: 1px solid rgba(212, 165, 165, 0.2);
+        }
+        #giftDescription:empty {
+            display: none;
+        }
+
+        #instructionText {
+            color: var(--text-light);
+            margin-bottom: 24px;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 16px 24px;
+            margin-bottom: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 12px rgba(212, 165, 165, 0.4);
+        }
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(212, 165, 165, 0.5);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        /* Festive disabled state - soft rose instead of grey */
+        button:disabled {
+            background: var(--primary-light);
+            color: var(--text-light);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            opacity: 0.85;
+        }
+
+        #rejectButton {
+            background: transparent;
+            color: var(--text-light);
+            border: 2px dashed var(--border);
+            font-size: 0.85rem;
+            padding: 12px 16px;
+            box-shadow: none;
+        }
+        #rejectButton:hover {
+            background: #FFF9E8;
+            border-style: solid;
+        }
+
+        #resetButton {
+            background: #FECACA;
+            color: #B91C1C;
+            margin-top: 30px;
+            box-shadow: none;
+        }
+        #resetButton:hover {
+            background: #FCA5A5;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid currentColor;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .nav-link {
+            text-align: center;
+            margin-top: 35px;
+        }
+        .nav-link a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 2px solid var(--border);
+            transition: all 0.2s;
+            display: inline-block;
+        }
+        .nav-link a:hover {
+            background: var(--card-bg);
+            border-color: var(--primary);
+            color: var(--text);
+        }
+
+        #previousGiftsTitle, #previousGifts {
+            display: none !important;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 30px 16px;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+            .gift-card {
+                padding: 28px 20px;
+            }
+            #selectedGift {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-icon">🎀</div>
+        <h1>Коробочка с подарками</h1>
+        <p class="subtitle">для Евгении</p>
+    </div>
+
+    <div class="main-content">
+        <div class="gift-card">
+            <div class="gift-emoji">🎁</div>
+            <p id="selectedGift"></p>
+            <p id="giftDescription"></p>
+            <p id="instructionText">Готова открыть коробочку? Жми на кнопку, чтобы получить подарок.</p>
+            <button id="giftButton">Получить Подарок</button>
+            <button id="rejectButton" style="display: none;">Не хочу этот подарок</button>
+        </div>
+
+        <div class="nav-link">
+            <a href="design-b-overview.html">История подарков →</a>
+        </div>
+    </div>
+
+    <button id="resetButton" style="display: none;">Сбросить Подарки</button>
+
+    <h3 id="previousGiftsTitle" style="display: none;">Предыдущие Подарки:</h3>
+    <ul id="previousGifts"></ul>
+
+    <script src="script.js"></script>
+</body>
+</html>
