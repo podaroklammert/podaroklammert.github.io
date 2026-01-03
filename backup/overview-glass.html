@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>История подарков для Евгении</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /*
+         * Apple Liquid Glass Design System - Calendar Page
+         * Based on macOS Tahoe / iOS 26 specifications (WWDC 2025)
+         *
+         * Key specifications:
+         * - Glass: 20-40% opacity white, blur 20-40px, saturate 180%
+         * - Shadow: rgba(31, 38, 135, 0.2) signature blue-tint
+         * - Border: rgba(255, 255, 255, 0.3-0.8)
+         * - Inner glow: inset shadows for depth
+         * - Three-layer system for authentic glass effect
+         */
+
+        :root {
+            /* Apple System Colors */
+            --system-blue: #007AFF;
+            --system-purple: #AF52DE;
+            --system-indigo: #5856D6;
+            --system-pink: #FF2D55;
+            --system-red: #FF3B30;
+            --system-orange: #FF9500;
+            --system-yellow: #FFCC00;
+            --system-green: #34C759;
+            --system-teal: #5AC8FA;
+
+            /* System Grays */
+            --system-gray: #8E8E93;
+            --system-gray-2: #AEAEB2;
+            --system-gray-3: #C7C7CC;
+            --system-gray-4: #D1D1D6;
+            --system-gray-5: #E5E5EA;
+            --system-gray-6: #F2F2F7;
+
+            /* Glass Materials (Light Mode) */
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-bg-thick: rgba(255, 255, 255, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --glass-border-light: rgba(255, 255, 255, 0.8);
+            --glass-shadow: rgba(31, 38, 135, 0.2);
+            --glass-shadow-light: rgba(31, 38, 135, 0.12);
+
+            /* Text Colors */
+            --text-primary: rgba(0, 0, 0, 0.85);
+            --text-secondary: rgba(0, 0, 0, 0.55);
+            --text-tertiary: rgba(0, 0, 0, 0.35);
+
+            /* Accent for this app - warm pink */
+            --accent: #FF6B9D;
+            --accent-rgb: 255, 107, 157;
+
+            /* Current month accent - gold */
+            --current-accent: #FFB800;
+            --current-accent-rgb: 255, 184, 0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
+            min-height: 100vh;
+            /* Soft gradient background - colors that peek through glass */
+            background:
+                radial-gradient(ellipse at 15% 15%, rgba(255, 182, 193, 0.4) 0%, transparent 45%),
+                radial-gradient(ellipse at 85% 25%, rgba(173, 216, 230, 0.35) 0%, transparent 40%),
+                radial-gradient(ellipse at 25% 75%, rgba(221, 160, 221, 0.3) 0%, transparent 45%),
+                radial-gradient(ellipse at 75% 85%, rgba(255, 218, 185, 0.35) 0%, transparent 40%),
+                radial-gradient(ellipse at 50% 50%, rgba(90, 200, 250, 0.15) 0%, transparent 50%),
+                linear-gradient(135deg, #fef7f9 0%, #f8f4ff 50%, #f0f8ff 100%);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Floating background orbs */
+        .bg-orbs {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(45px);
+            animation: float 28s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 320px;
+            height: 320px;
+            background: radial-gradient(circle, rgba(255, 107, 157, 0.3) 0%, transparent 70%);
+            top: -120px;
+            right: 5%;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 260px;
+            height: 260px;
+            background: radial-gradient(circle, rgba(90, 200, 250, 0.28) 0%, transparent 70%);
+            bottom: 8%;
+            left: -80px;
+            animation-delay: -10s;
+        }
+
+        .orb-3 {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(175, 82, 222, 0.22) 0%, transparent 70%);
+            top: 50%;
+            right: -60px;
+            animation-delay: -20s;
+        }
+
+        .orb-4 {
+            width: 180px;
+            height: 180px;
+            background: radial-gradient(circle, rgba(255, 184, 0, 0.2) 0%, transparent 70%);
+            top: 25%;
+            left: 8%;
+            animation-delay: -5s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(25px, -20px) scale(1.03); }
+            50% { transform: translate(-18px, 18px) scale(0.97); }
+            75% { transform: translate(12px, 22px) scale(1.02); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            padding: 40px 20px 60px;
+            max-width: 880px;
+            margin: auto;
+        }
+
+        /* Back link - glass pill capsule */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 10px 18px;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 100px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow:
+                0 2px 8px rgba(31, 38, 135, 0.08),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.3);
+            margin-bottom: 28px;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.45);
+            color: var(--text-primary);
+            transform: translateY(-1px);
+            box-shadow:
+                0 4px 14px rgba(31, 38, 135, 0.12),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.4);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .header-icon {
+            font-size: 2.6rem;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 4px 8px rgba(255, 107, 157, 0.25));
+        }
+
+        h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--accent);
+            letter-spacing: 0.005em;
+        }
+
+        /* Calendar grid */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+
+        @media (max-width: 720px) {
+            .calendar-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .calendar-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            .container {
+                padding: 30px 16px 50px;
+            }
+            h1 {
+                font-size: 1.4rem;
+            }
+        }
+
+        /*
+         * Month Cards - Authentic Liquid Glass Implementation
+         * Uses three-layer system: main + ::before (highlight) + ::after (depth)
+         */
+        .month-card {
+            position: relative;
+            border-radius: 20px;
+            isolation: isolate;
+
+            /* Glass background */
+            background: var(--glass-bg);
+
+            /* Core liquid glass effect */
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+
+            /* Border */
+            border: 1px solid var(--glass-border);
+
+            /* Blue-tinted shadow + inner glow */
+            box-shadow:
+                0 4px 20px var(--glass-shadow-light),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.5);
+
+            padding: 18px 12px;
+            text-align: center;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Highlight layer */
+        .month-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(
+                180deg,
+                rgba(255, 255, 255, 0.3) 0%,
+                rgba(255, 255, 255, 0.08) 50%,
+                transparent 100%
+            );
+            border-radius: 20px 20px 0 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Inner shadow layer */
+        .month-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            box-shadow: inset 0 0 16px -6px rgba(255, 255, 255, 0.4);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .month-card:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow:
+                0 8px 28px var(--glass-shadow),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.6);
+        }
+
+        /* Opened state - accent tint glass */
+        .month-card.opened {
+            background: linear-gradient(
+                135deg,
+                rgba(255, 107, 157, 0.12) 0%,
+                rgba(255, 255, 255, 0.28) 100%
+            );
+            border-color: rgba(255, 107, 157, 0.25);
+            box-shadow:
+                0 4px 20px rgba(255, 107, 157, 0.15),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.5);
+        }
+
+        .month-card.opened:hover {
+            box-shadow:
+                0 8px 28px rgba(255, 107, 157, 0.2),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.6);
+        }
+
+        /* Current month - golden glow glass */
+        .month-card.current {
+            background: linear-gradient(
+                135deg,
+                rgba(255, 204, 0, 0.18) 0%,
+                rgba(255, 245, 200, 0.35) 100%
+            );
+            border: 2px solid rgba(255, 184, 0, 0.4);
+            box-shadow:
+                0 4px 24px rgba(255, 184, 0, 0.25),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.6),
+                0 0 0 1px rgba(255, 204, 0, 0.15);
+        }
+
+        .month-card.current:hover {
+            box-shadow:
+                0 8px 32px rgba(255, 184, 0, 0.3),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.7),
+                0 0 0 1px rgba(255, 204, 0, 0.2);
+        }
+
+        /* Upcoming - muted glass */
+        .month-card.upcoming {
+            opacity: 0.55;
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        .month-card.upcoming:hover {
+            opacity: 0.7;
+            transform: translateY(-2px) scale(1.01);
+        }
+
+        .month-name {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            letter-spacing: 0.01em;
+            position: relative;
+            z-index: 1;
+        }
+
+        .gift-icon {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+            filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.06));
+        }
+
+        .gift-name {
+            font-size: 0.78rem;
+            color: var(--text-primary);
+            line-height: 1.4;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+            max-width: 100%;
+            word-wrap: break-word;
+        }
+
+        .gift-status {
+            font-size: 0.68rem;
+            color: var(--text-tertiary);
+            margin-top: 6px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            position: relative;
+            z-index: 1;
+        }
+
+        .month-card.opened .gift-status {
+            color: var(--accent);
+        }
+
+        .month-card.current .gift-status {
+            color: #CC9500;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="orb orb-4"></div>
+    </div>
+
+    <div class="container">
+        <a href="index-glass.html" class="back-link">← Назад к подарку</a>
+
+        <div class="header">
+            <div class="header-icon">🎁</div>
+            <h1>История подарков</h1>
+            <p class="subtitle">для Евгении</p>
+        </div>
+
+        <div class="calendar-grid" id="calendarGrid"></div>
+    </div>
+
+    <script>
+        const RUSSIAN_MONTHS = [
+            'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+            'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+        ];
+
+        function getCurrentMonth() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const monthParam = urlParams.get('month');
+            if (monthParam !== null) return parseInt(monthParam);
+            return new Date().getMonth();
+        }
+
+        async function fetchAllGifts() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const yearParam = urlParams.get('year');
+                const url = yearParam
+                    ? `/.netlify/functions/fetchAllGifts?year=${yearParam}`
+                    : '/.netlify/functions/fetchAllGifts';
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Network error');
+                return await response.json();
+            } catch (error) {
+                console.error("Error fetching gifts:", error);
+                return [];
+            }
+        }
+
+        async function renderCalendar() {
+            const gifts = await fetchAllGifts();
+            const currentMonth = getCurrentMonth();
+            const grid = document.getElementById('calendarGrid');
+            const givenGifts = gifts.filter(g => g.Given);
+
+            for (let month = 0; month < 12; month++) {
+                const card = document.createElement('div');
+                card.className = 'month-card';
+
+                let icon = '🎁';
+                let giftName = '';
+                let status = '';
+
+                if (month < givenGifts.length) {
+                    card.classList.add('opened');
+                    icon = '🎀';
+                    giftName = givenGifts[month]?.Name || '';
+                    status = 'Получен';
+                } else if (month === currentMonth) {
+                    card.classList.add('current');
+                    icon = '✨';
+                    status = 'Этот месяц';
+                } else if (month > currentMonth) {
+                    card.classList.add('upcoming');
+                    status = 'Скоро';
+                }
+
+                card.innerHTML = `
+                    <div class="month-name">${RUSSIAN_MONTHS[month]}</div>
+                    <div class="gift-icon">${icon}</div>
+                    <div class="gift-name">${giftName}</div>
+                    <div class="gift-status">${status}</div>
+                `;
+                grid.appendChild(card);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', renderCalendar);
+    </script>
+</body>
+</html>
